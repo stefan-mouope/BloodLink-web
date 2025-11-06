@@ -66,7 +66,7 @@ const Dashboard = () => {
     }
   };
 
-  // Fetch role-specific items from backend
+  // Fetch role-specific items from backend hhhj
   const { data: items = [], isLoading } = useQuery<UiItem[]>({
     queryKey: ["dashboard-items", role],
     enabled: !!role && isAuthenticated,
