@@ -114,34 +114,34 @@ const Dashboard = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-secondary to-background">
       {/* Header */}
-      <div className="bg-card shadow-md">
-        <div className="max-w-4xl mx-auto p-6">
+      <header className="bg-card shadow-md sticky top-0 z-50 backdrop-blur-sm bg-card/95">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 lg:py-6">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="w-12 h-12 bg-primary rounded-full flex items-center justify-center text-white">
+            <div className="flex items-center gap-3 lg:gap-4">
+              <div className="w-12 h-12 lg:w-14 lg:h-14 bg-primary rounded-full flex items-center justify-center text-white shadow-primary">
                 {getRoleIcon()}
               </div>
               <div>
-                <h1 className="text-xl font-bold">{userName}</h1>
+                <h1 className="text-xl lg:text-2xl font-bold">{userName}</h1>
                 <p className="text-sm text-muted-foreground">{getRoleLabel()}</p>
               </div>
             </div>
             
             <div className="flex items-center gap-2">
-              <Button variant="ghost" size="icon" className="relative">
+              <Button variant="ghost" size="icon" className="relative hover:bg-primary/10">
                 <Bell className="w-5 h-5" />
-                <span className="absolute top-1 right-1 w-2 h-2 bg-primary rounded-full"></span>
+                <span className="absolute top-1 right-1 w-2 h-2 bg-primary rounded-full animate-pulse"></span>
               </Button>
-              <Button variant="ghost" size="icon" onClick={() => navigate("/profile")}>
+              <Button variant="ghost" size="icon" onClick={() => navigate("/profile")} className="hover:bg-primary/10">
                 <User className="w-5 h-5" />
               </Button>
-              <Button variant="ghost" size="icon" onClick={handleLogout}>
+              <Button variant="ghost" size="icon" onClick={handleLogout} className="hover:bg-destructive/10 hover:text-destructive">
                 <LogOut className="w-5 h-5" />
               </Button>
             </div>
           </div>
         </div>
-      </div>
+      </header>
 
       {/* Main Content */}
       <div className="max-w-4xl mx-auto p-6 space-y-6">
