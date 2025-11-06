@@ -32,7 +32,7 @@ const Onboarding = () => {
     if (currentSlide < slides.length - 1) {
       setCurrentSlide(currentSlide + 1);
     } else {
-      navigate("/auth");
+      navigate("/login");
     }
   };
 
@@ -121,7 +121,7 @@ const Onboarding = () => {
 
           {currentSlide === 0 && (
             <Button 
-              onClick={() => navigate("/auth")} 
+              onClick={() => navigate("/register")} 
               variant="link" 
               className="w-full"
             >
