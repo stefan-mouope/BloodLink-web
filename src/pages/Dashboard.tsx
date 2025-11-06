@@ -6,7 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Heart, Hospital, Users, Plus, Bell, User, LogOut, Clock, CheckCircle2 } from "lucide-react";
 import { useAuthStore } from "@/store/auth";
 import { useQuery } from "@tanstack/react-query";
-import { api } from "@/services/api";
+import { api } from "@/services/users";
 
 type UserRole = "docteur" | "banque" | "donneur";
 
