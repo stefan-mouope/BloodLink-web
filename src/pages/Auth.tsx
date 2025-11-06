@@ -9,9 +9,9 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Heart, ArrowLeft } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useAuthStore } from "@/store/auth";
-import { AuthApi } from "@/services/api";
+import { AuthApi } from "@/services/users";
 import { useQuery } from "@tanstack/react-query";
-import { BanksApi } from "@/services/api";
+import { BanksApi } from "@/services/users";
 
 type UserRole = "docteur" | "banque" | "donneur";
 

@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-import { AuthApi, registerAuthInterceptors } from "@/services/api";
+import { AuthApi, registerAuthInterceptors } from "@/services/users";
 
 type UserRole = "donneur" | "docteur" | "banque";
 
