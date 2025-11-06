@@ -104,6 +104,11 @@ const Register = () => {
             <InputField id="password" label="Mot de passe *" type="password" value={formData.password} onChange={(v) => handleInputChange("password", v)} />
 
             <Button type="submit" variant="hero" size="lg" className="w-full">S'inscrire</Button>
+
+            <div className="text-center text-sm mt-2">
+                <span className="text-muted-foreground">Déjà un compte ?</span>
+                <Button type="button" variant="link" onClick={() => navigate("/login")} className="ml-2">Se connecter</Button>
+              </div>
           </form>
         </CardContent>
       </Card>
