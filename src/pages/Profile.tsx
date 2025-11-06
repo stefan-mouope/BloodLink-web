@@ -14,7 +14,7 @@ const Profile = () => {
   useEffect(() => {
     const isAuth = localStorage.getItem("isAuthenticated");
     if (!isAuth) {
-      navigate("/auth");
+      navigate("/login");
       return;
     }
 
@@ -202,7 +202,7 @@ const Profile = () => {
                 </Button>
                 <Button variant="destructive" size="lg" className="w-full" onClick={() => {
                   localStorage.clear();
-                  navigate("/auth");
+                  navigate("/login");
                 }}>
                   Se déconnecter
                 </Button>

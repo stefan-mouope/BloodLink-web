@@ -13,6 +13,7 @@ import DoctorPage from "./pages/DoctorPage/DoctorPage";
 import RequetePage from "./pages/DoctorPage/RequetePage";
 import Register from "./pages/Register/Register";
 import Login from "./pages/Login/Login";
+import Donnor from "./pages/donnor/Donnor";
 
 const queryClient = new QueryClient();
 
@@ -26,8 +27,9 @@ const App = () => (
           <Route path="/" element={<Onboarding />} />
           <Route path="/register" element={<Register />} />
           <Route path="/login" element={<Login />} />
-          {/* <Route path="/auth" element={<Auth />} /> */}
+          {/* <Route path= element={<Auth />} /> */}
           <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/donnor" element={<Donnor />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="/doctor" element={<DoctorPage />} />
           <Route path="/requete" element={<RequetePage/>} />

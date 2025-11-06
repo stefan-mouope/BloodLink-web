@@ -16,13 +16,13 @@ const DoctorPage = () => {
   const userName = user ? [user.prenom, user.nom].filter(Boolean).join(" ") : "Docteur";
 
   useEffect(() => {
-    if (!isAuthenticated) navigate("/auth");
+    if (!isAuthenticated) navigate("/login");
     loadRequetes();
   }, [isAuthenticated, navigate]);
 
   const handleLogout = () => {
     logout();
-    navigate("/auth");
+    navigate("/login");
   };
 
   const loadRequetes = async () => {

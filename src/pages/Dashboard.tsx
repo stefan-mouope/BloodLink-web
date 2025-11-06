@@ -51,19 +51,21 @@ const Dashboard = () => {
 
   useEffect(() => {
     if (!isAuthenticated) {
-      navigate("/auth");
+      navigate("/login");
       return;
     }
-
-    // Si c'est un docteur, on redirige vers sa page dédiée
-    if (user?.user_type === "docteur") {
-      navigate("/doctor");
-    }
+      // Si c'est un docteur, on redirige vers sa page dédiée
+      if (user?.user_type === "docteur") {
+        navigate("/doctor");
+      }
+      if (user?.user_type === "donneur") {
+        navigate("/donnor");
+      }
   }, [isAuthenticated, user, navigate]);
 
   const handleLogout = () => {
     logout();
-    navigate("/auth");
+    navigate("/login");
   };
 
   const getRoleIcon = () => {
