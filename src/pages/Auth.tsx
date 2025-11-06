@@ -8,47 +8,99 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Heart, ArrowLeft } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { useAuthStore } from "@/store/auth";
+import { AuthApi } from "@/services/api";
+import { useQuery } from "@tanstack/react-query";
+import { BanksApi } from "@/services/api";
 
-type UserRole = "doctor" | "blood_bank" | "donor";
+type UserRole = "docteur" | "banque" | "donneur";
 
 const bloodTypes = ["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"];
 
 const Auth = () => {
   const [isLogin, setIsLogin] = useState(true);
-  const [role, setRole] = useState<UserRole>("donor");
+  const [role, setRole] = useState<UserRole>("donneur");
   const [formData, setFormData] = useState({
-    fullName: "",
     email: "",
     password: "",
-    hospital: "",
-    bankName: "",
-    location: "",
-    bloodType: "",
-    phone: "",
+    // commun pour docteur / donneur / banque
+    nom: "",
+    prenom: "",
+    // donneur
+    groupe_sanguin: "",
+    // docteur
+    code_inscription: "",
+    BanqueDeSang: "",
+    // banque
+    localisation: "",
   });
 
   const navigate = useNavigate();
   const { toast } = useToast();
+  const login = useAuthStore((s) => s.login);
+  const register = useAuthStore((s) => s.register);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    // Store user data in localStorage for demo
-    localStorage.setItem("userRole", role);
-    localStorage.setItem("userData", JSON.stringify(formData));
-    localStorage.setItem("isAuthenticated", "true");
+    try {
+      if (isLogin) {
+        await login(formData.email, formData.password);
+      } else {
+        const payload: any = {
+          email: formData.email,
+          password: formData.password,
+          user_type: role,
+        };
+        if (role === "donneur") {
+          Object.assign(payload, {
+            nom: formData.nom,
+            prenom: formData.prenom,
+            groupe_sanguin: formData.groupe_sanguin,
+          });
+        } else if (role === "docteur") {
+          Object.assign(payload, {
+            nom: formData.nom,
+            prenom: formData.prenom,
+            code_inscription: formData.code_inscription,
+            BanqueDeSang: formData.BanqueDeSang ? Number(formData.BanqueDeSang) : undefined,
+          });
+        } else if (role === "banque") {
+          Object.assign(payload, {
+            nom: formData.nom,
+            localisation: formData.localisation,
+            code_inscription: formData.code_inscription,
+          });
+        }
+        // Registration should NOT log the user in automatically.
+        // Call API directly, then switch to login form.
+        await AuthApi.register(payload);
+        setIsLogin(true);
+        // Do not keep password after register
+        setFormData((prev) => ({ ...prev, password: "" }));
+        toast({ title: "Inscription réussie !", description: "Veuillez vous connecter avec vos identifiants." });
+        return; // do not navigate here
+      }
 
-    toast({
-      title: isLogin ? "Connexion réussie !" : "Inscription réussie !",
-      description: `Bienvenue ${formData.fullName || formData.bankName}`,
-    });
-
-    navigate("/dashboard");
+      toast({
+        title: isLogin ? "Connexion réussie !" : "Inscription réussie !",
+      });
+      navigate("/dashboard");
+    } catch (err: any) {
+      const description = err?.response?.data?.detail || err?.response?.data || "Une erreur est survenue";
+      toast({ title: "Erreur", description: String(description) });
+    }
   };
 
   const handleInputChange = (field: string, value: string) => {
     setFormData({ ...formData, [field]: value });
   };
+
+  // Fetch banks when role is docteur
+  const { data: banks = [], isLoading: banksLoading } = useQuery({
+    queryKey: ["banks"],
+    enabled: role === "docteur",
+    queryFn: () => BanksApi.list(),
+  });
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-secondary to-background p-6">
@@ -86,20 +138,20 @@ const Auth = () => {
                 <Label>Je suis :</Label>
                 <RadioGroup value={role} onValueChange={(value) => setRole(value as UserRole)}>
                   <div className="flex items-center space-x-2 p-3 rounded-lg border-2 border-border hover:border-primary transition-smooth cursor-pointer">
-                    <RadioGroupItem value="doctor" id="doctor" />
-                    <Label htmlFor="doctor" className="cursor-pointer flex-1 font-normal">
+                    <RadioGroupItem value="docteur" id="docteur" />
+                    <Label htmlFor="docteur" className="cursor-pointer flex-1 font-normal">
                       👨‍⚕️ Docteur
                     </Label>
                   </div>
                   <div className="flex items-center space-x-2 p-3 rounded-lg border-2 border-border hover:border-primary transition-smooth cursor-pointer">
-                    <RadioGroupItem value="blood_bank" id="blood_bank" />
-                    <Label htmlFor="blood_bank" className="cursor-pointer flex-1 font-normal">
+                    <RadioGroupItem value="banque" id="banque" />
+                    <Label htmlFor="banque" className="cursor-pointer flex-1 font-normal">
                       🏥 Banque de sang
                     </Label>
                   </div>
                   <div className="flex items-center space-x-2 p-3 rounded-lg border-2 border-border hover:border-primary transition-smooth cursor-pointer">
-                    <RadioGroupItem value="donor" id="donor" />
-                    <Label htmlFor="donor" className="cursor-pointer flex-1 font-normal">
+                    <RadioGroupItem value="donneur" id="donneur" />
+                    <Label htmlFor="donneur" className="cursor-pointer flex-1 font-normal">
                       ❤️ Donneur
                     </Label>
                   </div>
@@ -108,76 +160,71 @@ const Auth = () => {
 
               {/* Dynamic Fields based on Role */}
               <div className="space-y-4">
-                {role === "doctor" && (
+                {role === "docteur" && (
                   <>
                     <div className="space-y-2">
-                      <Label htmlFor="fullName">Nom complet *</Label>
-                      <Input
-                        id="fullName"
-                        type="text"
-                        placeholder="Dr. Jean Dupont"
-                        value={formData.fullName}
-                        onChange={(e) => handleInputChange("fullName", e.target.value)}
-                        required
-                      />
+                      <Label htmlFor="nom">Nom *</Label>
+                      <Input id="nom" type="text" placeholder="Dupont" value={formData.nom} onChange={(e) => handleInputChange("nom", e.target.value)} required />
                     </div>
                     <div className="space-y-2">
-                      <Label htmlFor="hospital">Hôpital *</Label>
-                      <Input
-                        id="hospital"
-                        type="text"
-                        placeholder="Hôpital Central"
-                        value={formData.hospital}
-                        onChange={(e) => handleInputChange("hospital", e.target.value)}
-                        required
-                      />
+                      <Label htmlFor="prenom">Prénom *</Label>
+                      <Input id="prenom" type="text" placeholder="Jean" value={formData.prenom} onChange={(e) => handleInputChange("prenom", e.target.value)} required />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="code_inscription">Code d'inscription (finit par DOC) *</Label>
+                      <Input id="code_inscription" type="text" placeholder="XXXX-DOC" value={formData.code_inscription} onChange={(e) => handleInputChange("code_inscription", e.target.value)} required />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="BanqueDeSang">Banque de sang *</Label>
+                      <Select
+                        value={formData.BanqueDeSang}
+                        onValueChange={(val) => handleInputChange("BanqueDeSang", val)}
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder={banksLoading ? "Chargement..." : "Sélectionner"} />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {banks.map((b: any) => (
+                            <SelectItem key={b.id} value={String(b.id)}>
+                              {b.nom} {b.localisation ? `— ${b.localisation}` : ""}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
                     </div>
                   </>
                 )}
 
-                {role === "blood_bank" && (
+                {role === "banque" && (
                   <>
                     <div className="space-y-2">
-                      <Label htmlFor="bankName">Nom de la banque *</Label>
-                      <Input
-                        id="bankName"
-                        type="text"
-                        placeholder="Banque de Sang Nationale"
-                        value={formData.bankName}
-                        onChange={(e) => handleInputChange("bankName", e.target.value)}
-                        required
-                      />
+                      <Label htmlFor="nom">Nom de la banque *</Label>
+                      <Input id="nom" type="text" placeholder="Banque de Sang Nationale" value={formData.nom} onChange={(e) => handleInputChange("nom", e.target.value)} required />
                     </div>
                     <div className="space-y-2">
-                      <Label htmlFor="location">Localisation *</Label>
-                      <Input
-                        id="location"
-                        type="text"
-                        placeholder="Paris, France"
-                        value={formData.location}
-                        onChange={(e) => handleInputChange("location", e.target.value)}
-                        required
-                      />
+                      <Label htmlFor="localisation">Localisation *</Label>
+                      <Input id="localisation" type="text" placeholder="Paris, France" value={formData.localisation} onChange={(e) => handleInputChange("localisation", e.target.value)} required />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="code_inscription">Code d'inscription (finit par BANC) *</Label>
+                      <Input id="code_inscription" type="text" placeholder="XXXX-BANC" value={formData.code_inscription} onChange={(e) => handleInputChange("code_inscription", e.target.value)} required />
                     </div>
                   </>
                 )}
 
-                {role === "donor" && (
+                {role === "donneur" && (
                   <>
                     <div className="space-y-2">
-                      <Label htmlFor="fullName">Nom complet *</Label>
-                      <Input
-                        id="fullName"
-                        type="text"
-                        placeholder="Marie Martin"
-                        value={formData.fullName}
-                        onChange={(e) => handleInputChange("fullName", e.target.value)}
-                        required
-                      />
+                      <Label htmlFor="nom">Nom *</Label>
+                      <Input id="nom" type="text" placeholder="Martin" value={formData.nom} onChange={(e) => handleInputChange("nom", e.target.value)} required />
                     </div>
                     <div className="space-y-2">
-                      <Label htmlFor="bloodType">Groupe sanguin *</Label>
-                      <Select value={formData.bloodType} onValueChange={(value) => handleInputChange("bloodType", value)}>
+                      <Label htmlFor="prenom">Prénom *</Label>
+                      <Input id="prenom" type="text" placeholder="Marie" value={formData.prenom} onChange={(e) => handleInputChange("prenom", e.target.value)} required />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="groupe_sanguin">Groupe sanguin *</Label>
+                      <Select value={formData.groupe_sanguin} onValueChange={(value) => handleInputChange("groupe_sanguin", value)}>
                         <SelectTrigger>
                           <SelectValue placeholder="Sélectionner" />
                         </SelectTrigger>
@@ -190,42 +237,17 @@ const Auth = () => {
                         </SelectContent>
                       </Select>
                     </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="phone">Numéro de téléphone *</Label>
-                      <Input
-                        id="phone"
-                        type="tel"
-                        placeholder="+33 6 12 34 56 78"
-                        value={formData.phone}
-                        onChange={(e) => handleInputChange("phone", e.target.value)}
-                        required
-                      />
-                    </div>
                   </>
                 )}
 
                 {/* Common Fields */}
                 <div className="space-y-2">
                   <Label htmlFor="email">Email *</Label>
-                  <Input
-                    id="email"
-                    type="email"
-                    placeholder="email@exemple.com"
-                    value={formData.email}
-                    onChange={(e) => handleInputChange("email", e.target.value)}
-                    required
-                  />
+                  <Input id="email" type="email" placeholder="email@exemple.com" value={formData.email} onChange={(e) => handleInputChange("email", e.target.value)} required />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="password">Mot de passe *</Label>
-                  <Input
-                    id="password"
-                    type="password"
-                    placeholder="••••••••"
-                    value={formData.password}
-                    onChange={(e) => handleInputChange("password", e.target.value)}
-                    required
-                  />
+                  <Input id="password" type="password" placeholder="••••••••" value={formData.password} onChange={(e) => handleInputChange("password", e.target.value)} required />
                 </div>
               </div>
 
