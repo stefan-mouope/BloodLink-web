@@ -245,7 +245,7 @@ const BanquePage = () => {
                     <Button
                       variant="default"
                       size="sm"
-                      onClick={() => mutationValider.mutate(a.requete.id)}
+                      onClick={() => mutationValider.mutate(a.id)}
                       disabled={mutationValider.status === "pending"}
                       className="bg-green-500 hover:bg-green-600 text-white"
                     >
