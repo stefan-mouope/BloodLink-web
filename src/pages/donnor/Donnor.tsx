@@ -235,7 +235,7 @@ const Donnor = () => {
                               className="bg-red-500 hover:bg-red-600 text-white"
                               disabled={isUpdating}
                               onClick={() =>
-                                accepterAlerte({ id: item.id, statut: "envoyee" })
+                                accepterAlerte({ id: item.id, statut: "en_attente" })
                               }
                             >
                               Je suis disponible
