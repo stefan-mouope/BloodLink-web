@@ -1,7 +1,7 @@
 import axios from "axios";
 
 // Base URL: set VITE_API_BASE_URL in .env, default to Django local
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:8000";
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "https://bloodlinks.onrender.com";
 // "https://bloodlinks.onrender.com";
 export const api = axios.create({
   baseURL: `${API_BASE_URL}/api`,
