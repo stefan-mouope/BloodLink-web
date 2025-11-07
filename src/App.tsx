@@ -14,6 +14,7 @@ import RequetePage from "./pages/DoctorPage/RequetePage";
 import Register from "./pages/Register/Register";
 import Login from "./pages/Login/Login";
 import Donnor from "./pages/donnor/Donnor";
+import BanquePage from "./pages/Bank/BanquePage";
 
 const queryClient = new QueryClient();
 
@@ -33,6 +34,8 @@ const App = () => (
           <Route path="/profile" element={<Profile />} />
           <Route path="/doctor" element={<DoctorPage />} />
           <Route path="/requete" element={<RequetePage/>} />
+          <Route path="/banque" element={<BanquePage/>} />
+
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
