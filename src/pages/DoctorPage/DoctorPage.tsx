@@ -14,11 +14,19 @@ const DoctorPage = () => {
   const [loading, setLoading] = useState(false);
 
   const userName = user ? [user.prenom, user.nom].filter(Boolean).join(" ") : "Docteur";
+useEffect(() => {
+  if (!isAuthenticated) navigate("/login");
 
-  useEffect(() => {
-    if (!isAuthenticated) navigate("/login");
+  // Charger immédiatement les requêtes
+  loadRequetes();
+
+  // Refresh automatique toutes les 10 sec
+  const interval = setInterval(() => {
     loadRequetes();
-  }, [isAuthenticated, navigate]);
+  }, 10000);
+
+  return () => clearInterval(interval);
+}, []);
 
   const handleLogout = () => {
     logout();

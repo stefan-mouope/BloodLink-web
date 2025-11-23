@@ -49,8 +49,14 @@ const Register = () => {
       toast({ title: "✅ Inscription réussie !", description: "Veuillez vous connecter avec vos identifiants." });
       navigate("/login");
     } catch (err: any) {
-      const description = err?.response?.data?.detail || err?.response?.data || "Une erreur est survenue";
+      let  description = "veillez verifier votre connexion internet";
+      if(err.response.status == 400){
+        description = err.response?.data.email;
+      }
+      
+      console.log(err.response)
       toast({ title: "❌ Erreur", description: String(description), variant: "destructive" });
+    // setIsLoading(false);
     } finally {
       setIsLoading(false);
     }
@@ -66,7 +72,7 @@ const Register = () => {
       </div>
 
       {/* Left Side - Branding */}
-      {/* <div className="hidden lg:flex flex-1 items-center justify-center p-12 relative z-10">
+       <div className="hidden lg:flex flex-1 items-center justify-center p-12 relative z-10">
         <div className="max-w-lg space-y-8">
           <div className="flex items-center gap-4">
             <div className="w-16 h-16 bg-gradient-to-br from-red-500 to-rose-600 rounded-2xl flex items-center justify-center shadow-2xl shadow-red-500/40">
@@ -117,7 +123,7 @@ const Register = () => {
             </div>
           </div>
         </div>
-      </div> */}
+      </div> 
 
       {/* Right Side - Register Form */}
       <div className="flex-1 flex items-center justify-center p-6 lg:p-12 relative z-10">

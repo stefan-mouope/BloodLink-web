@@ -30,16 +30,15 @@ const Donnor = () => {
   const groupeSanguin: string | undefined =
     user?.groupe_sanguin || user?.donneur?.groupe_sanguin;
 
-  useEffect(() => {
-    if (!isAuthenticated) navigate("/login");
-  }, [isAuthenticated, navigate]);
-
-  const { data: alertes = [], isLoading } = useQuery<Alerte[]>({
-    queryKey: ["alertes-par-groupe", groupeSanguin],
-    enabled: !!groupeSanguin && isAuthenticated,
-    queryFn: () => getAlertesParGroupe(groupeSanguin as string),
-  });
-
+ const { data: alertes = [], isLoading, refetch } = useQuery<Alerte[]>({
+  queryKey: ["alertes-par-groupe", groupeSanguin],
+  enabled: !!groupeSanguin && isAuthenticated,
+  queryFn: () => {
+        console.log("Fetching alertes pour", groupeSanguin, "à", new Date().toLocaleTimeString());
+    return getAlertesParGroupe(groupeSanguin as string)
+  },
+  refetchInterval: 10000, // 10 secondes
+});
   // Calculer les stats quand les alertes changent
   useEffect(() => {
     if (alertes && alertes.length > 0) {

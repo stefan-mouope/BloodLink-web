@@ -31,6 +31,7 @@ const [stats, setStats] = useState({ total: 0, alertesCreees: 0, enAttente: 0, c
     queryKey: ["requetes-banque", user?.id],
     enabled: !!user?.id && isAuthenticated,
     queryFn: () => getRequetesParBanque(user.id),
+    refetchInterval: 10000,
   });
 
   /** --- Alertes envoyées par la banque --- */

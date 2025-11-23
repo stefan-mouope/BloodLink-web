@@ -86,7 +86,8 @@ const Auth = () => {
       });
       navigate("/dashboard");
     } catch (err: any) {
-      const description = err?.response?.data?.detail || err?.response?.data || "Une erreur est survenue";
+      console.log(err.response);
+      const description = err?.response?.data?.detail || "Une erreur est survenue";
       toast({ title: "Erreur", description: String(description) });
     }
   };

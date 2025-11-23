@@ -23,7 +23,8 @@ const Login = () => {
       toast({ title: "✅ Connexion réussie !", description: "Bienvenue sur BloodLink" });
       navigate("/dashboard");
     } catch (err: any) {
-      const description = err?.response?.data?.detail || err?.response?.data || "Une erreur est survenue";
+      console.log(err.response.request.response)
+      const description =err.response?.data.non_field_errors[0];
       toast({ title: "❌ Erreur", description: String(description), variant: "destructive" });
     } finally {
       setIsLoading(false);
